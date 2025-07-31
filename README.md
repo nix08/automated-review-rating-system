@@ -23,19 +23,19 @@ This project predicts review star ratings (1–5 stars) from review text. You’
 
 Project Structure
 automated-review-rating-system/
-├── data/
-│   ├── Day3 Data/
-│   │   └── Reviews-4.csv
-│   └── cleaned_dataset/
-│       ├── cleaned_data.csv
-│       ├── balanced_data.csv
+├data/
+│   ├ Day3 Data/
+│   │   └Reviews-4.csv
+│   └ cleaned_dataset/
+│       ├ cleaned_data.csv
+│       ├ balanced_data.csv
 │       └── imbalanced_data_5star_30percent.csv
-├── notebooks/
-│   └── [automated-review-rating-system]
-├── scripts/
-│   └── []
-├── README.md
-└── .gitignore
+├notebooks/
+│   └ [automated-review-rating-system]
+├scripts/
+│   └[]
+├README.md
+└.gitignore
 Workflow
 1. Advanced Data Collection
 Download raw review data (Reviews-1.csv,Reviews-2.csv,Reviews-3.csv,Reviews-4.csv etc.) and save in data/Day3 Data/.
