@@ -29,7 +29,8 @@ automated-review-rating-system/
 │     cleaned_dataset/
 │      cleaned_data.csv
 │       balanced_data.csv
-│       imbalanced_data_5star_30percent.csv
+│       imbalanced_data.csv
+|        
 ├notebooks/
 │    [automated-review-rating-system]
 |scripts/
