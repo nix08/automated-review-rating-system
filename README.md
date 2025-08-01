@@ -24,16 +24,16 @@ This project predicts review star ratings (1–5 stars) from review text. You’
 Project Structure
 automated-review-rating-system/
 ├data/
-│   ├ Day3 Data/
-│   │   └Reviews-4.csv
-│   └ cleaned_dataset/
-│       ├ cleaned_data.csv
-│       ├ balanced_data.csv
-│       └── imbalanced_data_5star_30percent.csv
+│   Day3 Data/
+│     Reviews-4.csv
+│     cleaned_dataset/
+│      cleaned_data.csv
+│       balanced_data.csv
+│       imbalanced_data_5star_30percent.csv
 ├notebooks/
-│   └ [automated-review-rating-system]
-├scripts/
-│   └[]
+│    [automated-review-rating-system]
+|scripts/
+│   []
 ├README.md
 └.gitignore
 Workflow
