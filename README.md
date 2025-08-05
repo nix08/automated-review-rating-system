@@ -12,45 +12,45 @@ Imagine a hotel receives hundreds of guest reviews daily. Manually reading and s
 This helps businesses uncover hidden insights, maintain consistent feedback metrics, and improve customer experience based on real-time review data.
 Project Structure
 
-Workflow
-  Advanced Data Collection
-  Data Preprocessing
-  Data Visualization
-  Creating Imbalanced and Balanced Datasets
+Project Overview and Objective
+This project aims to develop an automated system that predicts product review ratings (1 to 5 stars) based on the text of the review. Using machine learning techniques, the system analyzes textual review data to learn patterns and accurately estimate the star rating.
+The objective is to build a clean, balanced dataset, apply appropriate preprocessing, and train baseline models using text vectorization methods for initial prototyping.
 
-Project Overview
-This project predicts review star ratings (1–5 stars) from review text. You’ll work with real datasets, practice robust data cleaning, explore class imbalance, and use both classic ML and simple NLP techniques in Python, all documented for easy learning and reproducibility.
+Dataset Description
+The dataset consists of customer product reviews collected from multiple CSV files. Each review contains a text field (review_text) and an associated rating (1 to 5 stars). The data varies in quality with noise such as URLs, HTML tags, emojis, and variable review lengths.
 
-Project Structure
-automated-review-rating-system/
-├data/
-│   ├ Day3 Data/
-│   │   └Reviews-4.csv
-│   └ cleaned_dataset/
-│       ├ cleaned_data.csv
-│       ├ balanced_data.csv
-│       └── imbalanced_data_5star_30percent.csv
-├notebooks/
-│   └ [automated-review-rating-system]
-├scripts/
-│   └[]
-├README.md
-└.gitignore
-Workflow
-1. Advanced Data Collection
-Download raw review data (Reviews-1.csv,Reviews-2.csv,Reviews-3.csv,Reviews-4.csv etc.) and save in data/Day3 Data/.
+Preprocessing Steps
+Text Cleaning: Convert reviews to lowercase; remove URLs, HTML tags, punctuation, emojis, and special characters.
 
-Inspect data
+Stopwords Removal: Removed common English stopwords using SpaCy to reduce noise.
 
-2. Data Preprocessing
-Remove rows with missing reviews or ratings
-Remove duplicate reviews
-Text cleanup (lowercase, remove punctuation)
-Remove short reviews
-Save the cleaned data
+Lemmatization: Applied lemmatization (word normalization) using SpaCy to convert words to their base form, improving semantic consistency.
 
-3. Data Visualization
-Show rating distribution (%)
+Filtering: Discarded reviews with fewer than 3 words or excessively long reviews (>200 words) to improve data quality.
 
-4. Creating Imbalanced and Balanced Datasets, ensuring  no overlap
+Visualizations Used
+Bar Plot: Displays the count of reviews per rating to check dataset balance.
+
+Box Plot: Shows the distribution of review word counts per rating class.
+
+Sample Reviews: Printed sample reviews per rating class to qualitatively inspect data content and formatting.
+
+Balancing Strategy
+To avoid class imbalance that could bias model training, the dataset was balanced by sampling an equal number of reviews per rating class (e.g., 2,000 reviews each). If the original data per class was insufficient, sampling with replacement was applied.
+
+Train-Test Split Methodology
+The balanced dataset was split into training (80%) and testing (20%) sets.
+
+A stratified split was used to maintain proportional representation of all rating classes in both sets.
+
+Shuffling was applied before splitting to randomize the order of samples.
+
+Notes on Decisions Taken
+Lemmatization vs Stemming: Lemmatization was favored as it preserves word meaning better than stemming, which can be more aggressive and less accurate.
+
+Vectorizer Choice: TF-IDF vectorization was selected to capture both term frequency and inverse document frequency, giving more importance to distinctive words and improving feature representation over simple Bag of Words.
+
+Modular and Reusable Code: The preprocessing pipeline and splitting methods were organized into reusable functions with clear inline comments and docstrings to facilitate maintainability and extensibility.
+
+
 
