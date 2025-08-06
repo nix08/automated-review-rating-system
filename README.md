@@ -17,10 +17,43 @@ This project aims to develop an automated system that predicts product review ra
 The objective is to build a clean, balanced dataset, apply appropriate preprocessing, and train baseline models using text vectorization methods for initial prototyping.
 
 Dataset Description
-The dataset consists of customer product reviews collected from multiple CSV files. Each review contains a text field (review_text) and an associated rating (1 to 5 stars). The data varies in quality with noise such as URLs, HTML tags, emojis, and variable review lengths.
+The dataset consists of customer product reviews collected from  CSV file. Each review contains a text field (Text) and an associated rating (1 to 5 stars). The data varies in quality with noise such as URLs, HTML tags, emojis, and variable review lengths.
 
 Preprocessing Steps
 Text Cleaning: Convert reviews to lowercase; remove URLs, HTML tags, punctuation, emojis, and special characters.
+
+Initial Cleaning
+Remove missing ratings or reviews
+  df = df.dropna(subset=['Text', 'Score'])
+
+Lowercase, strip punctuation, remove short reviews
+  df['Text'] = df['Text'].str.lower().str.replace('[^a-z ]', '', regex=True)
+  df = df[df['Text'].str.len() > 10]
+  df = df.drop_duplicates()
+
+  # Remove duplicates
+df = df.drop_duplicates()
+
+# Clean review text: lowercase, remove non-letters
+df['Text'] = df['Text'].str.lower().str.replace('[^a-z ]', '', regex=True)
+
+# Remove reviews shorter than 10 characters (optional)
+df = df[df['Text'].str.len() > 10]
+
+# Convert ratings to integer, if they aren't already
+df['Score'] = df['Score'].astype(int)
+
+
+Save cleaned data
+  df.to_csv('data/cleaned_dataset/cleaned_data.csv', index=False)
+
+
+5 Example Reviews per Rating
+        for rating in sorted(df['Score'].unique()):
+        print(f"\n--- 5 sample reviews for rating {rating} ---")
+        for review in df[df['Score'] == rating]['review_text'].sample(5, random_state=42):
+        print('-', review)
+
 
 Stopwords Removal: Removed common English stopwords using SpaCy to reduce noise.
 
@@ -51,6 +84,8 @@ Lemmatization vs Stemming: Lemmatization was favored as it preserves word meanin
 Vectorizer Choice: TF-IDF vectorization was selected to capture both term frequency and inverse document frequency, giving more importance to distinctive words and improving feature representation over simple Bag of Words.
 
 Modular and Reusable Code: The preprocessing pipeline and splitting methods were organized into reusable functions with clear inline comments and docstrings to facilitate maintainability and extensibility.
+
+
 
 
 
