@@ -85,6 +85,34 @@ Vectorizer Choice: TF-IDF vectorization was selected to capture both term freque
 
 Modular and Reusable Code: The preprocessing pipeline and splitting methods were organized into reusable functions with clear inline comments and docstrings to facilitate maintainability and extensibility.
 
+## Data Pipeline Documentation (Imbalanced Dataset)
+
+* Full workflow as described [above]—detailing loading, preprocessing (cleaning, lemmatization, stopword removal), filtering, EDA, stratified train-test splitting, and vectorization with TF-IDF. All steps emphasize reproducibility, no data leakage, and code modularity.
+
+## Algorithm Deep Dive: Logistic Regression
+
+**Type:** Supervised, linear classification  
+**Objective:** Predicts probabilities of text belonging to each rating class; finds linear decision boundaries using feature weights optimized by minimizing cross-entropy loss.
+
+### How It Works
+- Each review text becomes a high-dimensional feature vector (TF-IDF).
+- Calculates a weighted sum of features, applies softmax (multiclass) for prediction.
+- Learns weights to minimize prediction errors (loss) via optimization.
+
+### Key Hyperparameters
+- `C` (regularization—↓ for more regularization), `penalty` (`'l2'` best for text), `solver`, `max_iter`, `class_weight`.
+
+### Strengths
+- Fast, scalable, and interpretable for large, sparse text data.
+- Works well as a baseline or for cases where model explainability is needed.
+
+### Limitations
+- Only linear decision boundaries—misses nonlinear or sequence-based effects.
+- Can't exploit word order or sophisticated context relationships.
+
+### Usage
+- Best for baseline models, fast prototyping, and when you want interpretable coefficients.
+- For more complex or highly nonlinear text data, consider SVMs or deep neural models.
 
 
 
