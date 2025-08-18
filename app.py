@@ -1,42 +1,83 @@
 import streamlit as st
 import joblib
-import pandas as pd
+import tensorflow as tf
+import pickle
+import json
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
+# Load deep learning model
+deep_model = tf.keras.models.load_model("deep_model_balanced.h5")
 
-# Load saved model pipelines (make sure these files are in your project folder)
-model_A = joblib.load('model_A_balanced_pipeline.pkl')
-model_B = joblib.load('model_B_imbalanced_pipeline.pkl')
+# Load tokenizer
+with open("tokenizer_balanced.pkl", "rb") as f:
+    deep_tokenizer = pickle.load(f)
 
+# Load label mapping
+with open("label_to_int.json", "r") as f:
+    label_to_int = json.load(f)
+
+# Ensure keys are integers
+int_to_label = {i: int(k) if k.isdigit() else k for k, i in label_to_int.items()}
+
+# Load ML models and vectorizers
+model_A = joblib.load("model_A_balanced.pkl")
+vectorizer_A = joblib.load("vectorizer_model_A.pkl")
+model_B = joblib.load("model_B_imbalanced.pkl")
+vectorizer_B = joblib.load("vectorizer_model_B.pkl")
+
+# Streamlit UI
 st.title("Automated Review Rating System")
-
-# Input widgets for user review and numeric features
 review_text = st.text_area("Enter your product review:")
-
-helpfulness_num = st.number_input("Helpfulness Numerator", min_value=0, step=1)
-helpfulness_den = st.number_input("Helpfulness Denominator", min_value=0, step=1)
-review_length = len(review_text.split()) if review_text else 0
-time = st.number_input("Review Timestamp (Unix time)", min_value=0, step=1)
 
 if st.button("Get Predictions"):
     if not review_text.strip():
         st.warning("Please enter a review text to proceed.")
     else:
-        # Create DataFrame with the same structure as training data
-        input_df = pd.DataFrame({
-            "Text": [review_text],
-            "HelpfulnessNumerator": [helpfulness_num],
-            "HelpfulnessDenominator": [helpfulness_den],
-            "review_length": [review_length],
-            "Time": [time]
-        })
+        input_list = [review_text.strip()]
 
-        # Get predictions from both models
-        pred_A = model_A.predict(input_df)[0]
-        pred_B = model_B.predict(input_df)[0]
+        # --- ML Model A ---
+        try:
+            X_A = vectorizer_A.transform(input_list)
+            pred_A = model_A.predict(X_A)[0]
+        except Exception as e:
+            pred_A = "Error"
+            st.error(f"Model A prediction failed: {e}")
 
-        # Display results
+        # --- ML Model B ---
+        try:
+            X_B = vectorizer_B.transform(input_list)
+            pred_B = model_B.predict(X_B)[0]
+        except Exception as e:
+            pred_B = "Error"
+            st.error(f"Model B prediction failed: {e}")
+
+        # --- Deep Learning Model ---
+        try:
+            import re
+            cleaned_text = re.sub(r'[^a-zA-Z0-9\s]', '', review_text.strip())
+
+            if not cleaned_text:
+                raise ValueError("Review contains only special characters or unsupported tokens.")
+            seq = deep_tokenizer.texts_to_sequences([cleaned_text])
+            if not seq or not seq[0]:
+                raise ValueError("Review could not be tokenized.")
+
+            max_len = 100
+            pad = pad_sequences(seq, maxlen=max_len)
+            deep_pred_dist = deep_model.predict(pad)
+            deep_pred_class = int(deep_pred_dist.argmax(axis=1))
+            deep_pred_label = int_to_label.get(deep_pred_class, "Unknown")
+        except Exception as e:
+            deep_pred_label = "Error"
+            st.error(f"Deep model prediction failed: {e}")
+
+
+        # --- Display Results ---
         st.subheader("Prediction Results")
-        st.write(f"Model A (Balanced Dataset) predicted score: **{pred_A}**")
-        st.write(f"Model B (Imbalanced Dataset) predicted score: **{pred_B}**")
-        st.write("Note: Model A is trained on a balanced dataset, while Model B is trained on an imbalanced dataset.")
-        st.write("Consider the context of your review when interpreting the scores.")
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Model A (Balanced ML)", str(pred_A))
+        with col2:
+            st.metric("Model B (Imbalanced ML)", str(pred_B))
+        with col3:
+            st.metric("Deep Model (Keras)", str(deep_pred_label))
