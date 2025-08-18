@@ -12,6 +12,11 @@ deep_model = tf.keras.models.load_model("deep_model_balanced.h5")
 with open("tokenizer_balanced.pkl", "rb") as f:
     deep_tokenizer = pickle.load(f)
 
+# ✅ Verify tokenizer integrity
+if not hasattr(deep_tokenizer, "texts_to_sequences"):
+    st.error("Tokenizer is corrupted or not properly loaded.")
+    st.stop()
+
 # Load label mapping
 with open("label_to_int.json", "r") as f:
     label_to_int = json.load(f)
@@ -56,14 +61,16 @@ if st.button("Get Predictions"):
             import re
             cleaned_text = re.sub(r'[^a-zA-Z0-9\s]', '', review_text.strip())
 
+         # ✅ Fallback if cleaned text is empty
             if not cleaned_text:
-                raise ValueError("Review contains only special characters or unsupported tokens.")
+                cleaned_text = "<OOV>"
+
+         # ✅ Tokenize safely
             seq = deep_tokenizer.texts_to_sequences([cleaned_text])
             if not seq or not seq[0]:
-                raise ValueError("Review could not be tokenized.")
+                seq = [[deep_tokenizer.word_index.get("<OOV>", 1)]]
 
-            max_len = 100
-            pad = pad_sequences(seq, maxlen=max_len)
+            pad = pad_sequences(seq, maxlen=100)
             deep_pred_dist = deep_model.predict(pad)
             deep_pred_class = int(deep_pred_dist.argmax(axis=1))
             deep_pred_label = int_to_label.get(deep_pred_class, "Unknown")
